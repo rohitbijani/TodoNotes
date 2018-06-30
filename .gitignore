@@ -1,0 +1,17 @@
+/application.properties
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+target/
+.settings/
+.loadpath
+.recommenders
+
+
+# STS (Spring Tool Suite)
+.springBeans
