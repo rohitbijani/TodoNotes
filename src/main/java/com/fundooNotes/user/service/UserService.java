@@ -11,6 +11,8 @@ public interface UserService {
 	
 	public Integer registerUser(RegistrationDto registrationDto, HttpServletRequest request);
 	public User loginUser(LoginDto loginDto);
-	public void verifyUser(String jwt);
+	public Integer verifyUser(String jwt);
+	public Integer forgotPassword(String email, HttpServletRequest request);
+	public Integer resetPassword(String jwt, String password);
 
 }

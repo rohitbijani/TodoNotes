@@ -12,6 +12,9 @@ import com.fundooNotes.mail.EmailUtil;
 import com.fundooNotes.mail.TokenGenerator;
 import com.fundooNotes.user.dao.UserDao;
 import com.fundooNotes.user.model.User;
+
+import io.jsonwebtoken.Claims;
+
 import com.fundooNotes.user.model.LoginDto;
 import com.fundooNotes.user.model.RegistrationDto;
 
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
 			user.setPassword(encrypted);
 			id=userDao.save(user);
 			if (id!=null) {
-				String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", user.getEmail(), 900000);
+				String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", user.getEmail(), 3600000);
 				String link=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+
 						request.getRequestURI().replaceAll("registration", "verification")+"/"+token;
 				System.out.println(link);
@@ -64,9 +67,49 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void verifyUser(String jwt) {
-		// TODO Auto-generated method stub
+	@Transactional
+	public Integer verifyUser(String jwt) {
+		Claims claims=tokenGenerator.parseJWT(jwt);
+		User userInfo=userDao.getUserByEmail(claims.getSubject());
+		Integer id = null;
 		
+		if (userInfo!=null) {
+			userInfo.setVerified(true);
+			id=userDao.save(userInfo);
+		}
+		return id;
+	}
+
+	@Override
+	@Transactional
+	public Integer forgotPassword(String email, HttpServletRequest request) {
+		User userInfo=userDao.getUserByEmail(email);
+		Integer id = null;
+		
+		if (userInfo!=null) {
+			id = userInfo.getId();
+			String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 3600000);
+			String link=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+
+					request.getRequestURI().replaceAll("forgot-password", "reset-password")+"/"+token;
+			System.out.println(link);
+			emailUtil.sendEmail("fundoo8080@gmail.com", userInfo.getEmail(), "Reset Password", link);
+		}
+		return id;
+	}
+
+	@Override
+	@Transactional
+	public Integer resetPassword(String jwt, String password) {
+		Claims claims=tokenGenerator.parseJWT(jwt);
+		User userInfo=userDao.getUserByEmail(claims.getSubject());
+		Integer id = null;
+		
+		if (userInfo!=null) {
+			String encrypted=BCrypt.hashpw(userInfo.getPassword(), BCrypt.gensalt(15));
+			userInfo.setPassword(encrypted);
+			id=userDao.save(userInfo);
+		}
+		return id;
 	}
 
 }

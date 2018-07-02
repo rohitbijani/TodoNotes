@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -29,33 +30,32 @@ public class TokenGenerator {
 	    byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secretKey);
 	    Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 	 
-	    //Let's set the JWT Claims
 	    JwtBuilder builder = Jwts.builder().setId(id)
 	                                .setIssuedAt(now)
 	                                .setSubject(subject)
 	                                .setIssuer(issuer)
 	                                .signWith(signatureAlgorithm, signingKey);
 	 
-	    //if it has been specified, let's add the expiration
 	    if (ttlMillis >= 0) {
 	    long expMillis = nowMillis + ttlMillis;
 	        Date exp = new Date(expMillis);
 	        builder.setExpiration(exp);
 	    }
 	 
-	    //Builds the JWT and serializes it to a compact, URL-safe string
 	    return builder.compact();
 	}
 	
-	public void parseJWT(String jwt) {
+	public Claims parseJWT(String jwt) {
+	    Claims claims=null;
+		try {
+			claims = Jwts.parser()         
+				       .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
+				       .parseClaimsJws(jwt).getBody();
+		} 
+		catch (JwtException e) {
+			e.printStackTrace();
+		}
 		 
-	    //This line will throw an exception if it is not a signed JWS (as expected)
-	    Claims claims = Jwts.parser()         
-	       .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
-	       .parseClaimsJws(jwt).getBody();
-	    System.out.println("ID: " + claims.getId());
-	    System.out.println("Subject: " + claims.getSubject());
-	    System.out.println("Issuer: " + claims.getIssuer());
-	    System.out.println("Expiration: " + claims.getExpiration());
+		return claims;
 	}
 }
