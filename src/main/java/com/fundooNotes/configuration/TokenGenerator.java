@@ -1,4 +1,4 @@
-package com.fundooNotes.mail;
+package com.fundooNotes.configuration;
 
 import java.security.Key;
 import java.util.Date;
@@ -45,17 +45,18 @@ public class TokenGenerator {
 	    return builder.compact();
 	}
 	
-	public Claims parseJWT(String jwt) {
-	    Claims claims=null;
+	public Integer parseJWT(String jwt) {
+	    Integer id = null;
 		try {
-			claims = Jwts.parser()         
+			Claims claims = Jwts.parser()         
 				       .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
 				       .parseClaimsJws(jwt).getBody();
+			id=Integer.parseInt(claims.getId());
 		} 
 		catch (JwtException e) {
 			e.printStackTrace();
 		}
+		return id;
 		 
-		return claims;
 	}
 }

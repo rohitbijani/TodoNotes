@@ -8,12 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fundooNotes.mail.EmailUtil;
-import com.fundooNotes.mail.TokenGenerator;
+import com.fundooNotes.configuration.EmailUtil;
+import com.fundooNotes.configuration.RedisUtil;
+import com.fundooNotes.configuration.TokenGenerator;
 import com.fundooNotes.user.dao.UserDao;
 import com.fundooNotes.user.model.User;
-
-import io.jsonwebtoken.Claims;
 
 import com.fundooNotes.user.model.LoginDto;
 import com.fundooNotes.user.model.RegistrationDto;
@@ -29,6 +28,8 @@ public class UserServiceImpl implements UserService {
 	TokenGenerator tokenGenerator;
 	@Autowired
 	EmailUtil emailUtil;
+	@Autowired
+	RedisUtil redisUtil;
 	
 	@Override
 	@Transactional
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
 				String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", user.getEmail(), 3600000);
 				String link=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+
 						request.getRequestURI().replaceAll("registration", "verification")+"/"+token;
+				redisUtil.syncRedis().set(id.toString(), token);
 				System.out.println(link);
 				emailUtil.sendEmail("fundoo8080@gmail.com", user.getEmail(), "Email Verification", link);
 			}
@@ -69,11 +71,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public Integer verifyUser(String jwt) {
-		Claims claims=tokenGenerator.parseJWT(jwt);
-		User userInfo=userDao.getUserByEmail(claims.getSubject());
-		Integer id = null;
+		Integer id=tokenGenerator.parseJWT(jwt);
+		String redisToken=redisUtil.syncRedis().get(id.toString());
 		
-		if (userInfo!=null) {
+		if (redisToken.equals(jwt)) {
+			User userInfo=userDao.getUserById(id);
 			userInfo.setVerified(true);
 			id=userDao.save(userInfo);
 		}
@@ -89,8 +91,7 @@ public class UserServiceImpl implements UserService {
 		if (userInfo!=null) {
 			id = userInfo.getId();
 			String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 3600000);
-			String link=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+
-					request.getRequestURI().replaceAll("forgot-password", "reset-password")+"/"+token;
+			String link=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+"/notes/reset-password/"+token;
 			System.out.println(link);
 			emailUtil.sendEmail("fundoo8080@gmail.com", userInfo.getEmail(), "Reset Password", link);
 		}
@@ -100,11 +101,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public Integer resetPassword(String jwt, String password) {
-		Claims claims=tokenGenerator.parseJWT(jwt);
-		User userInfo=userDao.getUserByEmail(claims.getSubject());
-		Integer id = null;
+		Integer id=tokenGenerator.parseJWT(jwt);
 		
-		if (userInfo!=null) {
+		if (id!=null) {
+			User userInfo=userDao.getUserById(id);
 			String encrypted=BCrypt.hashpw(userInfo.getPassword(), BCrypt.gensalt(15));
 			userInfo.setPassword(encrypted);
 			id=userDao.save(userInfo);

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fundooNotes.user.model.User;
@@ -52,8 +53,8 @@ public class UserController {
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 
-	@RequestMapping(value = "/forgot-password", method = RequestMethod.POST)
-	public ResponseEntity<Void> forgotPassword(@RequestBody String email, HttpServletRequest request) {
+	@RequestMapping(value = "/forgot-password/{email:.+}", method = RequestMethod.GET)
+	public ResponseEntity<Void> forgotPassword(@PathVariable("email") String email, HttpServletRequest request) {
 		Integer id=userService.forgotPassword(email, request);
 		if (id==null)
 			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
@@ -62,7 +63,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/reset-password/{token:.+}", method = RequestMethod.POST)
-	public ResponseEntity<Void> resetPassword(@PathVariable("token") String token, @RequestBody String password) {
+	public ResponseEntity<Void> resetPassword(@PathVariable("token") String token, @RequestParam String password) {
 		Integer id=userService.resetPassword(token, password);
 		if (id==null)
 			return new ResponseEntity<Void>(HttpStatus.CONFLICT);

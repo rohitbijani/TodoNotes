@@ -34,9 +34,16 @@ public class UserDaoImpl implements UserDao {
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public Integer update(User user) {
-		// TODO Auto-generated method stub
+	public User getUserById(Integer id) {
+		Session session=sessionFactory.getCurrentSession();
+		Criteria criteria=session.createCriteria(User.class);
+		criteria.add(Restrictions.eq("id", id));
+		User userLogin=(User) criteria.uniqueResult();
+		if(userLogin!=null)
+			return userLogin;
+		
 		return null;
 	}
 
