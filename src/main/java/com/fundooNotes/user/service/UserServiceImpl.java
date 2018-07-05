@@ -91,6 +91,7 @@ public class UserServiceImpl implements UserService {
 		if (userInfo!=null) {
 			id = userInfo.getId();
 			String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 3600000);
+			redisUtil.syncRedis().set(id.toString(), token);
 			String link=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+"/notes/reset-password/"+token;
 			System.out.println(link);
 			emailUtil.sendEmail("fundoo8080@gmail.com", userInfo.getEmail(), "Reset Password", link);
@@ -102,8 +103,9 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public Integer resetPassword(String jwt, String password) {
 		Integer id=tokenGenerator.parseJWT(jwt);
-		
-		if (id!=null) {
+		String redisToken=redisUtil.syncRedis().get(id.toString());
+
+		if (redisToken.equals(jwt)) {
 			User userInfo=userDao.getUserById(id);
 			String encrypted=BCrypt.hashpw(userInfo.getPassword(), BCrypt.gensalt(15));
 			userInfo.setPassword(encrypted);

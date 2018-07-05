@@ -68,7 +68,7 @@ public class UserController {
 		if (id==null)
 			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
 
-		return new ResponseEntity<Void>(HttpStatus.OK);
+		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 	
 }
