@@ -56,13 +56,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public User loginUser(LoginDto loginDto) {
+	public String loginUser(LoginDto loginDto) {
 		User userInfo=userDao.getUserByEmail(loginDto.getEmail());
 		
 		if (userInfo!=null) {
 			String password=userInfo.getPassword();
 			if(BCrypt.checkpw(loginDto.getPassword(), password)) {
-				return userInfo;
+				Integer id=userInfo.getId();
+				String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 3600000);
+				System.out.println("Login token: "+token);
+				return token;
 			}		
 		}		
 		return null;

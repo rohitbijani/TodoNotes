@@ -1,11 +1,12 @@
 package com.fundooNotes.notes.model;
 
-public class CreateNoteDto {
+public class UpdateNoteDto {
 	private String title;
 	private String description;
 	private boolean isPinned;
 	private String color;
 	private boolean isArchived;
+	private boolean isTrash;
 	
 	public String getTitle() {
 		return title;
@@ -25,16 +26,22 @@ public class CreateNoteDto {
 	public void setPinned(boolean isPinned) {
 		this.isPinned = isPinned;
 	}
-	public String getColor() {
+	public String getCo1lor() {
 		return color;
 	}
-	public void setColor(String color) {
-		this.color = color;
+	public void setCo1lor(String co1lor) {
+		this.color = co1lor;
 	}
 	public boolean isArchived() {
 		return isArchived;
 	}
 	public void setArchived(boolean isArchived) {
 		this.isArchived = isArchived;
-	}	
+	}
+	public boolean isTrash() {
+		return isTrash;
+	}
+	public void setTrash(boolean isTrash) {
+		this.isTrash = isTrash;
+	}
 }

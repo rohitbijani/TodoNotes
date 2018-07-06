@@ -19,6 +19,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.user.model.User;
 
 @Configuration
@@ -52,7 +53,7 @@ public class AppConfig {
 	      props.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
 
 	      factoryBean.setHibernateProperties(props);
-	      factoryBean.setAnnotatedClasses(User.class);
+	      factoryBean.setAnnotatedClasses(User.class,Note.class);
 	      return factoryBean;		
 	}
 		
