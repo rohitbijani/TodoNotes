@@ -34,14 +34,14 @@ public class NoteServiceImpl implements NoteService {
 	
 	@Override
 	@Transactional
-	public void createNote(CreateNoteDto createNoteDto, HttpServletRequest request) throws UserNotFoundException {
+	public void createNote(CreateNoteDto createNoteDto, HttpServletRequest request) {
 		String token=request.getHeader("uid");
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
-		if(user==null) {
+		/*if(user==null) {
 			throw new UserNotFoundException();
-		}
+		}*/
 		
 		Note note=modelMapper.map(createNoteDto, Note.class);
 		note.setUser(user);
@@ -50,7 +50,7 @@ public class NoteServiceImpl implements NoteService {
 		userId=noteDao.save(note);
 		
 		if (userId==null) {
-			throw new HibernateException("Could not save the Note!");
+			throw new HibernateException("Could not create the Note!");
 		}
 	}
 
@@ -61,20 +61,16 @@ public class NoteServiceImpl implements NoteService {
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
-/*		if(user==null) {
+		if(user==null) {
 			throw new UserNotFoundException();
 		}
-*/		
+		
 		Note note=noteDao.getNoteById(id);
 		/*if(note==null) {
 			throw new Exception();
 		}*/
-		note.setTrash(true);
-		id=noteDao.save(note);
 		
-		/*if(id==null) {
-			throw new Exception();
-		}*/
+		noteDao.delete(note);
 	}
 
 	@Override
@@ -84,13 +80,12 @@ public class NoteServiceImpl implements NoteService {
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
-/*		if(user==null) {
+		/*if(user==null) {
 			throw new UserNotFoundException();
 		}
-		
-*/		
+		*/
 		Note note=noteDao.getNoteById(id);
-		modelMapper.map(updateNoteDto, Note.class);
+		note=modelMapper.map(updateNoteDto, Note.class);
 		note.setEditedDate(new Date());
 		noteDao.update(note);
 	}

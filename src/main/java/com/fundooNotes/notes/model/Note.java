@@ -38,11 +38,6 @@ public class Note {
 	@ManyToOne(cascade=CascadeType.ALL)
 	private User user;
 	
-	/*public Note(CreateNoteDto createNoteDto) {
-		this.title=createNoteDto.getTitle();
-		this.description=createNoteDto.getDescription();
-		this.isPinned=createNoteDto.isPinned();
-	}*/
 	public int getId() {
 		return id;
 	}

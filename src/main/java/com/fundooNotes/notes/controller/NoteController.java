@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fundooNotes.exception.UserNotFoundException;
 import com.fundooNotes.notes.model.CreateNoteDto;
 import com.fundooNotes.notes.model.UpdateNoteDto;
 import com.fundooNotes.notes.service.NoteService;
@@ -23,7 +22,7 @@ public class NoteController {
 	NoteService noteService;
 	
 	@RequestMapping(value = "/create-note", method = RequestMethod.POST)
-	public ResponseEntity<Void> create(@Valid @RequestBody CreateNoteDto createNoteDto, HttpServletRequest request) throws UserNotFoundException {
+	public ResponseEntity<Void> create(@Valid @RequestBody CreateNoteDto createNoteDto, HttpServletRequest request) {
 		noteService.createNote(createNoteDto, request);
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
@@ -34,8 +33,9 @@ public class NoteController {
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/update-note/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update-note/{id}", method = RequestMethod.POST)
 	public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody UpdateNoteDto updateNoteDto, HttpServletRequest request) {
+		noteService.updateNote(id, updateNoteDto, request);
 		return new ResponseEntity<Void>(HttpStatus.OK);
 		
 	}

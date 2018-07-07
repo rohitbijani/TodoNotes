@@ -28,6 +28,11 @@ public class NoteDaoImpl implements NoteDao {
 		sessionFactory.getCurrentSession().update(note);
 	}
 
+	@Override
+	public void delete(Note note) {
+		sessionFactory.getCurrentSession().delete(note);
+	}
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public Note getNoteById(Integer id) {

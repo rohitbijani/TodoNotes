@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 			String password=userInfo.getPassword();
 			if(BCrypt.checkpw(loginDto.getPassword(), password)) {
 				Integer id=userInfo.getId();
-				String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 3600000);
+				String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 36000000);
 				System.out.println("Login token: "+token);
 				return token;
 			}		
@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService {
 			User userInfo=userDao.getUserById(id);
 			userInfo.setVerified(true);
 			id=userDao.save(userInfo);
+			redisUtil.syncRedis().flushdb();
 		}
 		return id;
 	}
@@ -113,6 +114,7 @@ public class UserServiceImpl implements UserService {
 			String encrypted=BCrypt.hashpw(userInfo.getPassword(), BCrypt.gensalt(15));
 			userInfo.setPassword(encrypted);
 			id=userDao.save(userInfo);
+			redisUtil.syncRedis().flushdb();
 		}
 		return id;
 	}
