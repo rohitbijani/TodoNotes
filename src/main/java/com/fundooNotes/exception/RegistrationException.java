@@ -1,14 +1,13 @@
 package com.fundooNotes.exception;
 
-public class UserNotFoundException extends RuntimeException {
-	
+public class RegistrationException extends RuntimeException {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public UserNotFoundException(String message) {
+	
+	public RegistrationException(String message) {
 		super(message);
 	}
-
 }

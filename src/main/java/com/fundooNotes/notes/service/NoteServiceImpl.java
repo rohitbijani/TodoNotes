@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fundooNotes.configuration.TokenGenerator;
 import com.fundooNotes.exception.UserNotFoundException;
 import com.fundooNotes.notes.dao.NoteDao;
 import com.fundooNotes.notes.model.CreateNoteDto;
@@ -19,6 +18,7 @@ import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.notes.model.UpdateNoteDto;
 import com.fundooNotes.user.dao.UserDao;
 import com.fundooNotes.user.model.User;
+import com.fundooNotes.util.TokenGenerator;
 
 @Service
 public class NoteServiceImpl implements NoteService {
@@ -62,7 +62,7 @@ public class NoteServiceImpl implements NoteService {
 		User user=userDao.getUserById(userId);
 		
 		if(user==null) {
-			throw new UserNotFoundException();
+			throw new UserNotFoundException("User not found!");
 		}
 		
 		Note note=noteDao.getNoteById(id);

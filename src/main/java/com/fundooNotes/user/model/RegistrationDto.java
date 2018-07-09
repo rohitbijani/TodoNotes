@@ -1,7 +1,6 @@
 package com.fundooNotes.user.model;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
@@ -11,7 +10,7 @@ public class RegistrationDto {
 	@NotBlank
 	private String name;
 	@Email
-	@Pattern(regexp="^([a-zA-Z0-9])+@(([a-zA-Z0-9-])+.)+([a-zA-Z0-9]{2,4})+$")
+//	@Pattern(regexp="^([a-zA-Z0-9])+@(([a-zA-Z0-9-])+.)+([a-zA-Z0-9]{2,4})+$")
 	private String email;
 	@Size(min=6)
 	private String password;

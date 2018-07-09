@@ -1,4 +1,4 @@
-package com.fundooNotes.configuration;
+package com.fundooNotes.util;
 
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;

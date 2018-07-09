@@ -1,14 +1,13 @@
 package com.fundooNotes.exception;
 
-public class UserNotFoundException extends RuntimeException {
-	
+public class JwtException extends RuntimeException {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public UserNotFoundException(String message) {
+	
+	public JwtException(String message) {
 		super(message);
 	}
-
 }

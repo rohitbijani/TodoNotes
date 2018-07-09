@@ -41,7 +41,8 @@ public class NoteController {
 	}
 	
 	@RequestMapping(value = "/view-notes", method = RequestMethod.GET)
-	public ResponseEntity<Void> viewNotes() {
+	public ResponseEntity<Void> viewNotes(HttpServletRequest request) {
+		noteService.getNotes(request);
 		return new ResponseEntity<Void>(HttpStatus.OK);
 		
 	}

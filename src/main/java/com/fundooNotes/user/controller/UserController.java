@@ -38,37 +38,29 @@ public class UserController {
 	
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
 	public ResponseEntity<Void> register(@Valid @RequestBody RegistrationDto registrationDto, HttpServletRequest request) {
-		Integer id=userService.registerUser(registrationDto,request);
-		if (id==null)
-			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
-
+		userService.registerUser(registrationDto,request);
+		
 		return new ResponseEntity<Void>(HttpStatus.CREATED);		
 	}
 	
 	@RequestMapping(value = "/verification/{token:.+}", method = RequestMethod.GET)
 	public ResponseEntity<Void> verify(@PathVariable("token") String token) {
-		Integer id=userService.verifyUser(token);
-		if (id==null)
-			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
-
+		userService.verifyUser(token);
+		
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 
 	@RequestMapping(value = "/forgot-password/{email:.+}", method = RequestMethod.GET)
 	public ResponseEntity<Void> forgotPassword(@PathVariable("email") String email, HttpServletRequest request) {
-		Integer id=userService.forgotPassword(email, request);
-		if (id==null)
-			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
-
+		userService.forgotPassword(email, request);
+		
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/reset-password/{token:.+}", method = RequestMethod.POST)
 	public ResponseEntity<Void> resetPassword(@PathVariable("token") String token, @RequestParam String password) {
-		Integer id=userService.resetPassword(token, password);
-		if (id==null)
-			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
-
+		userService.resetPassword(token, password);
+		
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 	

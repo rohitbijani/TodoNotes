@@ -1,4 +1,4 @@
-package com.fundooNotes.configuration;
+package com.fundooNotes.util;
 
 import org.springframework.stereotype.Component;
 

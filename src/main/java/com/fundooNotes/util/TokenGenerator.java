@@ -1,4 +1,4 @@
-package com.fundooNotes.configuration;
+package com.fundooNotes.util;
 
 import java.security.Key;
 import java.util.Date;
@@ -8,11 +8,15 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.stereotype.Component;
 
+import com.fundooNotes.exception.JwtException;
+
+import io.jsonwebtoken.ClaimJwtException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 
 @Component
 public class TokenGenerator {
@@ -52,9 +56,9 @@ public class TokenGenerator {
 				       .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
 				       .parseClaimsJws(jwt).getBody();
 			id=Integer.parseInt(claims.getId());
-		} 
-		catch (JwtException e) {
-			e.printStackTrace();
+			
+		} catch (ClaimJwtException | SignatureException | MalformedJwtException e) {
+			throw new JwtException("JWT expired or signature validation error");
 		}
 		return id;
 		 
