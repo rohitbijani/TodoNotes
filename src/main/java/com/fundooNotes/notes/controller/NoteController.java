@@ -1,5 +1,7 @@
 package com.fundooNotes.notes.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fundooNotes.notes.model.CreateNoteDto;
+import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.notes.model.UpdateNoteDto;
 import com.fundooNotes.notes.service.NoteService;
 
@@ -41,9 +44,9 @@ public class NoteController {
 	}
 	
 	@RequestMapping(value = "/view-notes", method = RequestMethod.GET)
-	public ResponseEntity<Void> viewNotes(HttpServletRequest request) {
-		noteService.getNotes(request);
-		return new ResponseEntity<Void>(HttpStatus.OK);
+	public ResponseEntity<List<Note>> viewNotes(HttpServletRequest request) {
+		List<Note>notes=noteService.getNotes(request);
+		return new ResponseEntity<>(notes, HttpStatus.OK);
 		
 	}
 }

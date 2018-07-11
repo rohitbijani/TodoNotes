@@ -29,8 +29,8 @@ public class UpdateNoteDto {
 	public String getCo1lor() {
 		return color;
 	}
-	public void setCo1lor(String co1lor) {
-		this.color = co1lor;
+	public void setColor(String color) {
+		this.color = color;
 	}
 	public boolean isArchived() {
 		return isArchived;

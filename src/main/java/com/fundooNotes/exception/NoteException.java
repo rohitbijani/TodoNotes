@@ -1,9 +1,10 @@
 package com.fundooNotes.exception;
 
-public class MailException extends RuntimeException {
+public class NoteException extends RuntimeException {
+
 	private static final long serialVersionUID = 1L;
 	
-	public MailException(String message) {
+	public NoteException(String message) {
 		super(message);
 	}
 }

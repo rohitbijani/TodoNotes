@@ -5,11 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fundooNotes.exception.RegistrationException;
+import com.fundooNotes.exception.ForgotPasswordException;
 import com.fundooNotes.exception.JwtException;
 import com.fundooNotes.exception.UserNotFoundException;
 import com.fundooNotes.user.dao.UserDao;
@@ -36,6 +38,10 @@ public class UserServiceImpl implements UserService {
 	EmailUtil emailUtil;
 	@Autowired
 	RedisUtil redisUtil;
+	@Value("${hostname}")
+	String uri;
+	@Value("${issuer}")
+	String issuer;
 	
 	@Override
 	@Transactional
@@ -48,15 +54,12 @@ public class UserServiceImpl implements UserService {
 
 		String encrypted=BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(15));
 		user.setPassword(encrypted);
-		Integer id=userDao.save(user);
-		if (id==null) {
-			throw new RegistrationException("Database save error");
-		}
-
+		userDao.save(user);
+		Integer id=user.getId();
+		
 		try {
-			String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", user.getEmail(), 3600000);
-			String link=request.getScheme()+"://192.168.0.55:"+request.getServerPort()+
-					request.getRequestURI().replaceAll("registration", "verification")+"/"+token;
+			String token=tokenGenerator.createJWT(id.toString(), issuer, user.getEmail(), 3600000);
+			String link=uri + "/registration/" + token;
 			redisUtil.syncRedis().set(id.toString(), token);
 			System.out.println(link);
 			emailUtil.sendEmail("FundooNotes", user.getEmail(), "Email Verification", link);	
@@ -79,8 +82,11 @@ public class UserServiceImpl implements UserService {
 			throw new UserNotFoundException("Login Error: Invalid Password!");
 		}
 
+		if(!userInfo.isVerified()) {
+			throw new UserNotFoundException("Account not activated");
+		}
 		Integer id=userInfo.getId();
-		String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 36000000);
+		String token=tokenGenerator.createJWT(id.toString(), issuer, userInfo.getEmail(), 36000000);
 		System.out.println("Login token: "+token);
 		return token;
 	}
@@ -96,11 +102,8 @@ public class UserServiceImpl implements UserService {
 		
 		User userInfo=userDao.getUserById(id);
 		userInfo.setVerified(true);
+		userDao.save(userInfo);
 		
-		id=userDao.save(userInfo);
-		if (id==null) {
-			throw new RegistrationException("Database save error");
-		}
 		redisUtil.syncRedis().flushdb();	
 	}
 
@@ -114,14 +117,14 @@ public class UserServiceImpl implements UserService {
 		
 		try {
 			Integer id = userInfo.getId();
-			String token=tokenGenerator.createJWT(id.toString(), "RohitBijani", userInfo.getEmail(), 3600000);
+			String token=tokenGenerator.createJWT(id.toString(), issuer, userInfo.getEmail(), 3600000);
 			redisUtil.syncRedis().set(id.toString(), token);
-			String link=request.getScheme()+"://192.168.0.55:"+request.getServerPort()+"/notes/reset-password/"+token;
+			String link=uri + "/reset-password/" + token;
 			System.out.println(link);
-			emailUtil.sendEmail("fundoo8080@gmail.com", userInfo.getEmail(), "Reset Password", link);
+			emailUtil.sendEmail("FundooNotes", userInfo.getEmail(), "Reset Password", link);
 			
 		} catch (RedisException | MailException e) {
-			throw new RegistrationException("!");
+			throw new ForgotPasswordException("Link not sent for reseting password.");
 		}			
 	}
 
@@ -135,13 +138,10 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		User userInfo=userDao.getUserById(id);
-		String encrypted=BCrypt.hashpw(userInfo.getPassword(), BCrypt.gensalt(15));
+		String encrypted=BCrypt.hashpw(password, BCrypt.gensalt(15));
 		userInfo.setPassword(encrypted);
+		userDao.save(userInfo);
 		
-		id=userDao.save(userInfo);
-		if (id==null) {
-			throw new RegistrationException("Database save error");
-		}
 		redisUtil.syncRedis().flushdb();
 	}
 
