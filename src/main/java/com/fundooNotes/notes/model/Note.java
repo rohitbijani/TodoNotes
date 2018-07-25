@@ -1,16 +1,22 @@
 package com.fundooNotes.notes.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.user.model.User;
 
 @Entity
@@ -37,6 +43,11 @@ public class Note {
 	private boolean isTrash;
 	@ManyToOne(cascade=CascadeType.ALL)
 	private User user;
+	@ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	@JoinTable(name="Note_Label",
+	joinColumns = @JoinColumn(name="note_id"),
+	inverseJoinColumns = @JoinColumn(name="label_id"))
+	private List<Label> labels;
 	
 	public int getId() {
 		return id;
@@ -97,5 +108,11 @@ public class Note {
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+	public List<Label> getLabels() {
+		return labels;
+	}
+	public void setLabels(List<Label> labels) {
+		this.labels = labels;
 	}
 }

@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.user.model.User;
 
@@ -56,7 +57,7 @@ public class AppConfig {
 	      props.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
 
 	      factoryBean.setHibernateProperties(props);
-	      factoryBean.setAnnotatedClasses(User.class,Note.class);
+	      factoryBean.setAnnotatedClasses(User.class,Note.class,Label.class);
 	      return factoryBean;		
 	}
 		
@@ -94,7 +95,8 @@ public class AppConfig {
         return new WebMvcConfigurerAdapter() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE").allowedOrigins("http://localhost:8080");
+                registry.addMapping("/**")
+                .allowedMethods("GET", "POST", "PUT", "DELETE").allowedOrigins("*").allowedHeaders("*");
             }
         };
     }

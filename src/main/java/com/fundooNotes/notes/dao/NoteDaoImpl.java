@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fundooNotes.notes.model.Note;
+import com.fundooNotes.user.model.User;
 
 @Repository
 public class NoteDaoImpl implements NoteDao {
@@ -30,7 +31,10 @@ public class NoteDaoImpl implements NoteDao {
 
 	@Override
 	public void delete(Note note) {
-		sessionFactory.getCurrentSession().delete(note);
+		sessionFactory.getCurrentSession().createQuery("delete from Note where id= :id")
+		.setParameter("id", note.getId()).executeUpdate();
+		
+//		sessionFactory.getCurrentSession().delete(note);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -46,10 +50,10 @@ public class NoteDaoImpl implements NoteDao {
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
-	public List<Note> getNotes(Integer userId) {
+	public List<Note> getNotes(User user) {
 		Session session=sessionFactory.getCurrentSession();
 		Criteria criteria=session.createCriteria(Note.class);
-		criteria.add(Restrictions.eq("user_id", userId));
+		criteria.add(Restrictions.eq("user", user));
 		List<Note> notes=criteria.list();
 		
 		return notes;

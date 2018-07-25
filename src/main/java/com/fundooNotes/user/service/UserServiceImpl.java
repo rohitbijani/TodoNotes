@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 		
 		try {
 			String token=tokenGenerator.createJWT(id.toString(), issuer, user.getEmail(), 3600000);
-			String link=uri + "/registration/" + token;
+			String link=uri + "/verification/" + token;
 			redisUtil.syncRedis().set(id.toString(), token);
 			System.out.println(link);
 			emailUtil.sendEmail("FundooNotes", user.getEmail(), "Email Verification", link);	
@@ -82,9 +82,9 @@ public class UserServiceImpl implements UserService {
 			throw new UserNotFoundException("Login Error: Invalid Password!");
 		}
 
-		if(!userInfo.isVerified()) {
-			throw new UserNotFoundException("Account not activated");
-		}
+//		if(!userInfo.isVerified()) {
+//			throw new UserNotFoundException("Account not activated");
+//		}
 		Integer id=userInfo.getId();
 		String token=tokenGenerator.createJWT(id.toString(), issuer, userInfo.getEmail(), 36000000);
 		System.out.println("Login token: "+token);

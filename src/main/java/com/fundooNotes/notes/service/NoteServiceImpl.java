@@ -1,9 +1,8 @@
 package com.fundooNotes.notes.service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
@@ -35,8 +34,7 @@ public class NoteServiceImpl implements NoteService {
 	
 	@Override
 	@Transactional
-	public void createNote(CreateNoteDto createNoteDto, HttpServletRequest request) {
-		String token=request.getHeader("uid");
+	public void createNote(CreateNoteDto createNoteDto, String token) {
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
@@ -53,8 +51,7 @@ public class NoteServiceImpl implements NoteService {
 
 	@Override
 	@Transactional
-	public void deleteNote(Integer id, HttpServletRequest request) {
-		String token=request.getHeader("uid");
+	public void deleteNote(Integer id, String token) {
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
@@ -63,7 +60,7 @@ public class NoteServiceImpl implements NoteService {
 		}
 		
 		Note note=noteDao.getNoteById(id);
-		if(note==null) {
+		if(note==null || (note.getUser().getId()!=userId)) {
 			throw new NoteException("Cannot delete. Note not found!");
 		}
 		
@@ -72,8 +69,7 @@ public class NoteServiceImpl implements NoteService {
 
 	@Override
 	@Transactional
-	public void updateNote(Integer id, UpdateNoteDto updateNoteDto, HttpServletRequest request) {
-		String token=request.getHeader("uid");
+	public void updateNote(UpdateNoteDto updateNoteDto, String token) {
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
@@ -81,22 +77,25 @@ public class NoteServiceImpl implements NoteService {
 			throw new UserNotFoundException("User doesn't exists!");
 		}
 		
-		Note note=noteDao.getNoteById(id);
-		if(note==null) {
+		Note note=noteDao.getNoteById(updateNoteDto.getId());
+		if(note==null || (note.getUser().getId()!=userId)) {
 			throw new NoteException("Cannot update. Note not found!");
+		}
+		
+		if(! updateNoteDto.getTitle().equals(note.getTitle()) || 
+				! updateNoteDto.getDescription().equals(note.getDescription())) {
+			note.setEditedDate(new Date());
 		}
 		
 		modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
 		modelMapper.map(updateNoteDto, note);
 		System.out.println(note.getId());
-		note.setEditedDate(new Date());
 		noteDao.update(note);
 	}
 
 	@Override
 	@Transactional
-	public List<Note> getNotes(HttpServletRequest request) {
-		String token=request.getHeader("uid");
+	public List<Note> getNotes(String token) {
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
@@ -104,7 +103,8 @@ public class NoteServiceImpl implements NoteService {
 			throw new UserNotFoundException("Cannot get notes. User doesn't exists!");
 		}
 		
-		List<Note> notes=noteDao.getNotes(userId);
+		List<Note> notes=noteDao.getNotes(user);
+		Collections.reverse(notes);
 		return notes;
 	}
 

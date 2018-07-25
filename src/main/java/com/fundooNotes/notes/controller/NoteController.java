@@ -18,35 +18,43 @@ import com.fundooNotes.notes.model.CreateNoteDto;
 import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.notes.model.UpdateNoteDto;
 import com.fundooNotes.notes.service.NoteService;
+import com.fundooNotes.user.model.Response;
 
 @RestController
 public class NoteController {
 	@Autowired
 	NoteService noteService;
+	@Autowired
+	Response response;
 	
 	@RequestMapping(value = "/create-note", method = RequestMethod.POST)
-	public ResponseEntity<Void> create(@Valid @RequestBody CreateNoteDto createNoteDto, HttpServletRequest request) {
-		noteService.createNote(createNoteDto, request);
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	public ResponseEntity<Response> create(@Valid @RequestBody CreateNoteDto createNoteDto, HttpServletRequest request) {
+		String token = request.getHeader("token");
+		noteService.createNote(createNoteDto, token);
+		response.setMessage("Note created");
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/delete-note/{id}", method = RequestMethod.POST)
-	public ResponseEntity<Void> delete(@PathVariable Integer id, HttpServletRequest request) {
-		noteService.deleteNote(id, request);
-		return new ResponseEntity<Void>(HttpStatus.OK);
+	@RequestMapping(value = "/delete-note/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Response> delete(@PathVariable Integer id, HttpServletRequest request) {
+		String token = request.getHeader("token");
+		noteService.deleteNote(id, token);
+		response.setMessage("Note deleted");
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/update-note/{id}", method = RequestMethod.POST)
-	public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody UpdateNoteDto updateNoteDto, HttpServletRequest request) {
-		noteService.updateNote(id, updateNoteDto, request);
-		return new ResponseEntity<Void>(HttpStatus.OK);
-		
+	@RequestMapping(value = "/update-note", method = RequestMethod.PUT)
+	public ResponseEntity<Response> update(@RequestBody UpdateNoteDto updateNoteDto, HttpServletRequest request) {
+		String token = request.getHeader("token");
+		noteService.updateNote(updateNoteDto, token);
+		response.setMessage("Note updated");
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/view-notes", method = RequestMethod.GET)
 	public ResponseEntity<List<Note>> viewNotes(HttpServletRequest request) {
-		List<Note>notes=noteService.getNotes(request);
-		return new ResponseEntity<>(notes, HttpStatus.OK);
-		
+		String token = request.getHeader("token");
+		List<Note>notes=noteService.getNotes(token);
+		return new ResponseEntity<>(notes, HttpStatus.OK);		
 	}
 }

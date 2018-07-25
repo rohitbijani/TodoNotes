@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fundooNotes.user.model.LoginDto;
 import com.fundooNotes.user.model.RegistrationDto;
+import com.fundooNotes.user.model.Response;
 import com.fundooNotes.user.service.UserService;
 
 /**
@@ -25,41 +26,44 @@ import com.fundooNotes.user.service.UserService;
 public class UserController {
 	@Autowired
 	UserService userService;
+	@Autowired
+	Response response;
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<String> login(@Valid @RequestBody LoginDto loginDto) {
+	public ResponseEntity<Response> login(@Valid @RequestBody LoginDto loginDto) {
 		String loginJwt=userService.loginUser(loginDto);
 		HttpHeaders headers=new HttpHeaders();
 		headers.add("Authorization", loginJwt);
-		return new ResponseEntity<>("Login successful", headers, HttpStatus.OK);
+		response.setMessage(loginJwt);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
-	public ResponseEntity<String> register(@Valid @RequestBody RegistrationDto registrationDto, HttpServletRequest request) {
+	public ResponseEntity<Response> register(@Valid @RequestBody RegistrationDto registrationDto, HttpServletRequest request) {
 		userService.registerUser(registrationDto,request);
-		
-		return new ResponseEntity<>("Registration done. Check your mail", HttpStatus.CREATED);		
+		response.setMessage("Registration done. Check your mail");
+		return new ResponseEntity<>(response, HttpStatus.CREATED);		
 	}
 	
 	@RequestMapping(value = "/verification/{token:.+}", method = RequestMethod.GET)
-	public ResponseEntity<String> verify(@PathVariable("token") String token) {
+	public ResponseEntity<Response> verify(@PathVariable("token") String token) {
 		userService.verifyUser(token);
-		
-		return new ResponseEntity<>("Account verified", HttpStatus.ACCEPTED);
+		response.setMessage("Account verified");
+		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
 
 	@RequestMapping(value = "/forgot-password/{email:.+}", method = RequestMethod.GET)
-	public ResponseEntity<String> forgotPassword(@PathVariable("email") String email, HttpServletRequest request) {
+	public ResponseEntity<Response> forgotPassword(@PathVariable("email") String email, HttpServletRequest request) {
 		userService.forgotPassword(email, request);
-		
-		return new ResponseEntity<>("Mail sent", HttpStatus.OK);
+		response.setMessage("Mail sent");
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/reset-password/{token:.+}", method = RequestMethod.POST)
-	public ResponseEntity<String> resetPassword(@PathVariable("token") String token, @RequestParam String password) {
+	public ResponseEntity<Response> resetPassword(@PathVariable("token") String token, @RequestParam String password) {
 		userService.resetPassword(token, password);
-		
-		return new ResponseEntity<>("Password changed successfully", HttpStatus.ACCEPTED);
+		response.setMessage("Password changed successfully");
+		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
 	
 }
