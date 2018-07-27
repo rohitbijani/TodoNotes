@@ -28,7 +28,6 @@ public class Label {
 	private String name;
 	@ManyToOne(cascade=CascadeType.ALL)
 	private User user;
-	@LazyCollection(LazyCollectionOption.FALSE)
 	@ManyToMany(cascade=CascadeType.ALL, mappedBy="labels")
 	private List<Note> notes;
 	public int getId() {

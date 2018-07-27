@@ -9,6 +9,7 @@ public interface LabelDao {
 	public Integer save(Label label);
 	public void update(Label label);
 	public void delete(Label label);
+	public Label getLabelById(Integer id);
 	public List<Label> getLabels(User user);
 
 }

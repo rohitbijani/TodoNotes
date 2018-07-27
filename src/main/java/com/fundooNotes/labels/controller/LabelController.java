@@ -8,16 +8,15 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fundooNotes.labels.model.CreateLabelDto;
 import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.labels.model.LabelDto;
 import com.fundooNotes.labels.service.LabelService;
-import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.user.model.Response;
 
 @RestController
@@ -28,9 +27,9 @@ public class LabelController {
 	Response response;
 	
 	@RequestMapping(value = "/create-label", method = RequestMethod.POST)
-	public ResponseEntity<Response> create(@Valid @RequestBody LabelDto labelDto, HttpServletRequest request) {
+	public ResponseEntity<Response> create(@Valid @RequestBody CreateLabelDto createLabelDto, HttpServletRequest request) {
 		String token = request.getHeader("token");
-		labelService.createLabel(labelDto, token);
+		labelService.createLabel(createLabelDto, token);
 		response.setMessage("Label created");
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
@@ -47,12 +46,12 @@ public class LabelController {
 	public ResponseEntity<Response> update(@RequestBody LabelDto labelDto, HttpServletRequest request) {
 		String token = request.getHeader("token");
 		labelService.updateLabel(labelDto, token);
-		response.setMessage("Note updated");
+		response.setMessage("Label updated");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/view-labels", method = RequestMethod.GET)
-	public ResponseEntity<List<Label>> viewNotes(HttpServletRequest request) {
+	public ResponseEntity<List<Label>> viewLabels(HttpServletRequest request) {
 		String token = request.getHeader("token");
 		List<Label>labels=labelService.getLabels(token);
 		return new ResponseEntity<>(labels, HttpStatus.OK);		

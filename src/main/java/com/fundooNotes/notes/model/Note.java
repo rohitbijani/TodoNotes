@@ -43,7 +43,7 @@ public class Note {
 	private boolean isTrash;
 	@ManyToOne(cascade=CascadeType.ALL)
 	private User user;
-	@ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinTable(name="Note_Label",
 	joinColumns = @JoinColumn(name="note_id"),
 	inverseJoinColumns = @JoinColumn(name="label_id"))

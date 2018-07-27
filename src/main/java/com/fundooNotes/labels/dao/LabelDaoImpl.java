@@ -2,7 +2,10 @@ package com.fundooNotes.labels.dao;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -32,10 +35,25 @@ public class LabelDaoImpl implements LabelDao {
 		.setParameter("id", label.getId()).executeUpdate();
 	}
 
+
+	@Override
+	public Label getLabelById(Integer id) {
+		Session session=sessionFactory.getCurrentSession();
+		Criteria criteria=session.createCriteria(Label.class);
+		criteria.add(Restrictions.eq("id", id));
+		Label label=(Label) criteria.uniqueResult();
+		
+		return label;
+	}
+
 	@Override
 	public List<Label> getLabels(User user) {
-		// TODO Auto-generated method stub
-		return null;
+		Session session=sessionFactory.getCurrentSession();
+		Criteria criteria=session.createCriteria(Label.class);
+		criteria.add(Restrictions.eq("user", user));
+		List<Label> labels=criteria.list();
+		
+		return labels;
 	}
 
 }
