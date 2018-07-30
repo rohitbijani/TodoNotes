@@ -47,7 +47,7 @@ public class LabelServiceImpl implements LabelService {
 	}
 
 	@Override
-	public void deleteLabel(LabelDto labelDto, String token) {
+	public void deleteLabel(Integer id, String token) {
 		Integer userId=tokenGenerator.parseJWT(token);
 		User user=userDao.getUserById(userId);
 		
@@ -55,7 +55,7 @@ public class LabelServiceImpl implements LabelService {
 			throw new UserNotFoundException("User doesn't exists!");
 		}
 		
-		Label label=labelDao.getLabelById(labelDto.getId());
+		Label label=labelDao.getLabelById(id);
 		if (label==null || (label.getUser().getId()!=userId)) {
 			throw new NoteException("Cannot delete. Label not found!");
 		}
@@ -87,7 +87,7 @@ public class LabelServiceImpl implements LabelService {
 		User user=userDao.getUserById(userId);
 		
 		if(user==null) {
-			throw new UserNotFoundException("Cannot get notes. User doesn't exists!");
+			throw new UserNotFoundException("Cannot get labels. User doesn't exists!");
 		}
 		
 		List<Label> labels=labelDao.getLabels(user);

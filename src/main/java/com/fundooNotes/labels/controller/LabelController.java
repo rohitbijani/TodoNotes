@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,10 +35,10 @@ public class LabelController {
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(value = "/delete-label", method = RequestMethod.DELETE)
-	public ResponseEntity<Response> delete(@RequestBody LabelDto labelDto, HttpServletRequest request) {
+	@RequestMapping(value = "/delete-label/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Response> delete(@PathVariable Integer id, HttpServletRequest request) {
 		String token = request.getHeader("token");
-		labelService.deleteLabel(labelDto, token);
+		labelService.deleteLabel(id, token);
 		response.setMessage("Label deleted");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

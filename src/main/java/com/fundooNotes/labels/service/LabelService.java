@@ -8,7 +8,7 @@ import com.fundooNotes.labels.model.LabelDto;
 
 public interface LabelService {
 	public void createLabel(CreateLabelDto createLabelDto, String token);
-	public void deleteLabel(LabelDto labelDto, String token);
+	public void deleteLabel(Integer id, String token);
 	public void updateLabel(LabelDto labelDto, String token);
 	public List<Label> getLabels(String token);
 	
