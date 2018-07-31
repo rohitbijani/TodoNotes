@@ -106,7 +106,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         };
     }
 	
-	@Bean
+/*	@Bean
 	public MappingJackson2HttpMessageConverter jacksonMessageConverter(){
         MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
 
@@ -123,5 +123,5 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         converters.add(jacksonMessageConverter());
 		super.configureMessageConverters(converters);
 	}
-	
+*/	
 }

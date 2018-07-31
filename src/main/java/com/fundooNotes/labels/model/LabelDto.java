@@ -1,9 +1,11 @@
 package com.fundooNotes.labels.model;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 public class LabelDto {
 	private int id;
+	@NotBlank
 	private String name;
-//	private List<Note> notes;
 	
 	public int getId() {
 		return id;

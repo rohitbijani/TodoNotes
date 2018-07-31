@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fundooNotes.labels.model.CreateLabelDto;
 import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.labels.model.LabelDto;
+import com.fundooNotes.labels.model.LabelNote;
 import com.fundooNotes.labels.service.LabelService;
 import com.fundooNotes.user.model.Response;
 
@@ -57,5 +58,20 @@ public class LabelController {
 		List<Label>labels=labelService.getLabels(token);
 		return new ResponseEntity<>(labels, HttpStatus.OK);		
 	}
-
+	
+	@RequestMapping(value = "/add-label", method = RequestMethod.POST)
+	public ResponseEntity<Response> addLabel(@RequestBody LabelNote labelNote, HttpServletRequest request) {
+		String token = request.getHeader("token");
+		labelService.addLabel(labelNote, token);
+		response.setMessage("Label added to note");
+		return new ResponseEntity<>(response, HttpStatus.OK);		
+	}
+	
+	@RequestMapping(value = "/remove-label", method = RequestMethod.POST)
+	public ResponseEntity<Response> removeLabel(@RequestBody LabelNote labelNote, HttpServletRequest request) {
+		String token = request.getHeader("token");
+		labelService.removeLabel(labelNote, token);
+		response.setMessage("Label removed from note");
+		return new ResponseEntity<>(response, HttpStatus.OK);		
+	}
 }

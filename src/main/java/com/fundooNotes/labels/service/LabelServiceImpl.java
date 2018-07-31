@@ -14,6 +14,9 @@ import com.fundooNotes.labels.dao.LabelDao;
 import com.fundooNotes.labels.model.CreateLabelDto;
 import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.labels.model.LabelDto;
+import com.fundooNotes.labels.model.LabelNote;
+import com.fundooNotes.notes.dao.NoteDao;
+import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.user.dao.UserDao;
 import com.fundooNotes.user.model.User;
 import com.fundooNotes.util.TokenGenerator;
@@ -27,6 +30,8 @@ public class LabelServiceImpl implements LabelService {
 	LabelService labelService;
 	@Autowired
 	LabelDao labelDao;
+	@Autowired
+	NoteDao noteDao;
 	@Autowired
 	TokenGenerator tokenGenerator;
 	@Autowired
@@ -74,7 +79,7 @@ public class LabelServiceImpl implements LabelService {
 		
 		Label label=labelDao.getLabelById(labelDto.getId());
 		if (label==null || (label.getUser().getId()!=userId)) {
-			throw new NoteException("Cannot delete. Label not found!");
+			throw new NoteException("Cannot update. Label not found!");
 		}
 		
 		modelMapper.map(labelDto, label);
@@ -93,6 +98,74 @@ public class LabelServiceImpl implements LabelService {
 		List<Label> labels=labelDao.getLabels(user);
 		Collections.reverse(labels);
 		return labels;
+	}
+
+	@Override
+	public void addLabel(LabelNote labelNote, String token) {
+		Integer userId=tokenGenerator.parseJWT(token);
+		User user=userDao.getUserById(userId);
+		
+		if(user==null) {
+			throw new UserNotFoundException("User doesn't exists!");
+		}
+		
+		Label label=labelDao.getLabelById(labelNote.getLabelId());
+		if (label==null || (label.getUser().getId()!=userId)) {
+			throw new NoteException("Label not found!");
+		}
+		
+		Note note=noteDao.getNoteById(labelNote.getNoteId());
+		if(note==null || (note.getUser().getId()!=userId)) {
+			throw new NoteException("Note not found!");
+		}
+		
+		List<Label> labels=note.getLabels();
+		List<Note> notes=label.getNotes();
+		if(labels.contains(label) || notes.contains(note)) {
+			throw new NoteException("Label already added on the note.");
+		}
+		
+		labels.add(label);
+		note.setLabels(labels);
+		noteDao.update(note);
+		
+		notes.add(note);
+		label.setNotes(notes);
+		labelDao.update(label);
+	}
+
+	@Override
+	public void removeLabel(LabelNote labelNote, String token) {
+		Integer userId=tokenGenerator.parseJWT(token);
+		User user=userDao.getUserById(userId);
+		
+		if(user==null) {
+			throw new UserNotFoundException("User doesn't exists!");
+		}
+		
+		Label label=labelDao.getLabelById(labelNote.getLabelId());
+		if (label==null || (label.getUser().getId()!=userId)) {
+			throw new NoteException("Label not found!");
+		}
+		
+		Note note=noteDao.getNoteById(labelNote.getNoteId());
+		if(note==null || (note.getUser().getId()!=userId)) {
+			throw new NoteException("Note not found!");
+		}
+		
+		List<Label> labels=note.getLabels();
+		List<Note> notes=label.getNotes();
+		if(! labels.contains(label) || ! notes.contains(note)) {
+			throw new NoteException("Label not found on the note.");
+		}
+		
+		labels.remove(label);
+		note.setLabels(labels);
+		noteDao.update(note);
+		
+		notes.remove(note);
+		label.setNotes(notes);
+		labelDao.update(label);
 	}
 
 }
