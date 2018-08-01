@@ -104,7 +104,7 @@ public class NoteServiceImpl implements NoteService {
 		}
 		
 		List<Note> notes=noteDao.getNotes(user);
-		Collections.reverse(notes);
+//		Collections.reverse(notes);
 		return notes;
 	}
 

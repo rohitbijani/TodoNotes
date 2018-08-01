@@ -56,6 +56,7 @@ public class LabelController {
 	public ResponseEntity<List<Label>> viewLabels(HttpServletRequest request) {
 		String token = request.getHeader("token");
 		List<Label>labels=labelService.getLabels(token);
+		
 		return new ResponseEntity<>(labels, HttpStatus.OK);		
 	}
 	

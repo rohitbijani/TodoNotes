@@ -1,6 +1,5 @@
 package com.fundooNotes.labels.service;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -96,7 +95,6 @@ public class LabelServiceImpl implements LabelService {
 		}
 		
 		List<Label> labels=labelDao.getLabels(user);
-		Collections.reverse(labels);
 		return labels;
 	}
 

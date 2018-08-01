@@ -6,6 +6,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -48,14 +49,18 @@ public class NoteDaoImpl implements NoteDao {
 		return note;
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<Note> getNotes(User user) {
-		Session session=sessionFactory.getCurrentSession();
+		/*Session session=sessionFactory.getCurrentSession();
 		Criteria criteria=session.createCriteria(Note.class);
 		criteria.add(Restrictions.eq("user", user));
 		List<Note> notes=criteria.list();
+		*/
 		
+		String hql = "FROM Note WHERE user = :user";
+		Query query = sessionFactory.getCurrentSession().createQuery(hql).setParameter("user", user);
+		List notes = query.getResultList();
 		return notes;
 	}
 
