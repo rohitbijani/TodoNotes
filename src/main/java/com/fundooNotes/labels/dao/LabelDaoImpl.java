@@ -6,6 +6,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -36,6 +37,7 @@ public class LabelDaoImpl implements LabelDao {
 	}
 
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Label getLabelById(Integer id) {
 		Session session=sessionFactory.getCurrentSession();
@@ -46,13 +48,17 @@ public class LabelDaoImpl implements LabelDao {
 		return label;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Label> getLabels(User user) {
-		Session session=sessionFactory.getCurrentSession();
+		/*Session session=sessionFactory.getCurrentSession();
 		Criteria criteria=session.createCriteria(Label.class);
 		criteria.add(Restrictions.eq("user", user));
 		List<Label> labels=criteria.list();
-		
+		*/
+		String hql = "FROM Label WHERE user = :user";
+		Query<Label> query = sessionFactory.getCurrentSession().createQuery(hql).setParameter("user", user);
+		List<Label> labels = query.getResultList();
 		return labels;
 	}
 

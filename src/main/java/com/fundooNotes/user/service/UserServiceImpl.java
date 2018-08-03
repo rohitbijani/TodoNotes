@@ -82,9 +82,9 @@ public class UserServiceImpl implements UserService {
 			throw new UserNotFoundException("Login Error: Invalid Password!");
 		}
 
-//		if(!userInfo.isVerified()) {
-//			throw new UserNotFoundException("Account not activated");
-//		}
+		if(!userInfo.isVerified()) {
+			throw new UserNotFoundException("Account not activated");
+		}
 		Integer id=userInfo.getId();
 		String token=tokenGenerator.createJWT(id.toString(), issuer, userInfo.getEmail(), 36000000);
 		System.out.println("Login token: "+token);

@@ -10,6 +10,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.user.model.User;
 
@@ -59,8 +60,18 @@ public class NoteDaoImpl implements NoteDao {
 		*/
 		
 		String hql = "FROM Note WHERE user = :user";
-		Query query = sessionFactory.getCurrentSession().createQuery(hql).setParameter("user", user);
-		List notes = query.getResultList();
+		Query<Note> query = sessionFactory.getCurrentSession().createQuery(hql).setParameter("user", user);
+		List<Note> notes = query.getResultList();
+		return notes;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Note> getLabelNotes(Label label) {
+		String hql = "FROM Note WHERE label = :label";
+		Query<Note> query = sessionFactory.getCurrentSession().createQuery(hql).setParameter("label", label);
+		List<Note> notes = query.getResultList();
+		
 		return notes;
 	}
 

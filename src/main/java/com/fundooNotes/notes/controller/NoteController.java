@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.notes.model.CreateNoteDto;
 import com.fundooNotes.notes.model.Note;
 import com.fundooNotes.notes.model.UpdateNoteDto;
@@ -56,5 +57,12 @@ public class NoteController {
 		String token = request.getHeader("token");
 		List<Note>notes=noteService.getNotes(token);
 		return new ResponseEntity<>(notes, HttpStatus.OK);		
+	}
+	
+	@RequestMapping(value = "/view-labelnotes", method = RequestMethod.POST)
+	public ResponseEntity<List<Note>> viewLabelNotes(@RequestBody Label label, HttpServletRequest request) {
+		String token = request.getHeader("token");
+		List<Note>notes=noteService.getLabelNotes(label, token);
+		return new ResponseEntity<>(notes, HttpStatus.OK);
 	}
 }

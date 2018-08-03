@@ -1,6 +1,5 @@
 package com.fundooNotes.notes.service;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fundooNotes.exception.NoteException;
 import com.fundooNotes.exception.UserNotFoundException;
+import com.fundooNotes.labels.dao.LabelDao;
+import com.fundooNotes.labels.model.Label;
 import com.fundooNotes.notes.dao.NoteDao;
 import com.fundooNotes.notes.model.CreateNoteDto;
 import com.fundooNotes.notes.model.Note;
@@ -27,6 +28,8 @@ public class NoteServiceImpl implements NoteService {
 	UserDao userDao;
 	@Autowired
 	NoteDao noteDao;
+	@Autowired
+	LabelDao labelDao;
 	@Autowired
 	TokenGenerator tokenGenerator;
 	@Autowired
@@ -105,6 +108,23 @@ public class NoteServiceImpl implements NoteService {
 		
 		List<Note> notes=noteDao.getNotes(user);
 //		Collections.reverse(notes);
+		return notes;
+	}
+
+	@Override
+	public List<Note> getLabelNotes(Label label, String token) {
+		Integer userId=tokenGenerator.parseJWT(token);
+		User user=userDao.getUserById(userId);
+		
+		if(user==null) {
+			throw new UserNotFoundException("Cannot get notes. User doesn't exists!");
+		}
+		
+		if (! labelDao.getLabels(user).contains(label)) {
+			throw new NoteException("Label not found!");
+		}
+		
+		List<Note> notes=noteDao.getLabelNotes(label);
 		return notes;
 	}
 
